@@ -5,7 +5,8 @@ export default function Player() {
    const inputRef = useRef();
 
    const nameHandler = () => {
-      setName(inputRef.current.value);
+      setName(inputRef.current.value); // Set the name field with the input field...
+      inputRef.current.value = ""; // Clear the input field after setting the name field...
    };
 
    return (
