@@ -2,32 +2,41 @@ import { useRef, useState } from "react";
 import ResultModal from "./ResultModal";
 
 export default function TimerChallange({ title, targetTime }) {
-   const [timeStart, setTimeStart] = useState(false);
-   const [timeExp, setTimeExp] = useState(false);
-   const timeoutRef = useRef(null);
-   const modalRef = useRef(null);
+   const [timeLeft, setTimeLeft] = useState(targetTime * 1000); // time left in milliseconds...
+   const timeoutRef = useRef(null); // store the timeout...
+   const modalRef = useRef(null); // store the modal...
+
+   const timeIsActive = timeLeft > 0 && timeLeft < targetTime * 1000;
+
+   if (timeLeft <= 0) {
+      clearInterval(timeoutRef.current);
+      modalRef.current.showModal();
+      timeoutRef.current = null;
+   }
+
+   function handleReset() {
+      setTimeLeft(targetTime * 1000);
+   }
 
    const handleStart = () => {
-      timeoutRef.current = setTimeout(() => {
-         setTimeExp(true); // time expiration timer...
-         modalRef.current.showModal(); // show the result modal...
-      }, targetTime * 1000);
-      setTimeStart(true); // timeout is set, so the time is running...
+      timeoutRef.current = setInterval(() => {
+         setTimeLeft((prevTime) => prevTime - 10); // time left in every 10ms...
+      }, 10);
    };
 
    const handleStop = () => {
       if (timeoutRef.current) {
-         clearTimeout(timeoutRef.current); // clear the timeout...
+         modalRef.current.showModal(); // show the result modal...
+         clearInterval(timeoutRef.current); // clear the timeout...
          timeoutRef.current = null; // reset the timeout...
       }
-      setTimeStart(false); // prevent the time from running...
-      setTimeExp(false); // reset the time expiration...
    };
 
    return (
       <>
          <ResultModal
-            result={timeExp ? "FAILED" : "SUCCEEDED"}
+            remainingTime={timeLeft}
+            onReset={handleReset}
             targetTime={targetTime}
             dialogRef={modalRef}
          />
@@ -38,12 +47,12 @@ export default function TimerChallange({ title, targetTime }) {
                {targetTime} second{targetTime > 1 ? "s" : ""}
             </p>
             <p>
-               <button onClick={timeStart ? handleStop : handleStart}>
-                  {timeStart ? "Stop" : "Start"} Timer
+               <button onClick={timeIsActive ? handleStop : handleStart}>
+                  {timeIsActive ? "Stop" : "Start"} Timer
                </button>
             </p>
-            <p className={timeStart ? "active" : undefined}>
-               {timeStart ? "Time is running..." : "Time is inactve..."}
+            <p className={timeIsActive ? "active" : undefined}>
+               {timeIsActive ? "Time is running..." : "Time is inactive..."}
             </p>
          </section>
       </>
