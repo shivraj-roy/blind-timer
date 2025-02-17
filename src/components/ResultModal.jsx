@@ -1,3 +1,5 @@
+import { createPortal } from "react-dom";
+
 export default function ResultModal({
    targetTime,
    dialogRef,
@@ -8,7 +10,7 @@ export default function ResultModal({
    const msTime = targetTime * 1000;
    const score = Math.round((1 - remainingTime / msTime) * 100);
 
-   return (
+   return createPortal(
       <dialog className="result-modal" ref={dialogRef} onClose={onReset}>
          {userLost && <h2>YOU LOST</h2>}
          {!userLost && <h2>YOUR SCORE: {score} </h2>}
@@ -22,6 +24,7 @@ export default function ResultModal({
          <form method="dialog" onSubmit={onReset}>
             <button>CLOSE</button>
          </form>
-      </dialog>
+      </dialog>,
+      document.getElementById("modal")
    );
 }
