@@ -8,7 +8,7 @@ export default function ResultModal({
 }) {
    const userLost = remainingTime <= 0;
    const msTime = targetTime * 1000;
-   const score = Math.round((1 - remainingTime / msTime) * 100);
+   const score = Math.round((1 - remainingTime / msTime) * 100) + "%";
 
    return createPortal(
       <dialog className="result-modal" ref={dialogRef} onClose={onReset}>
